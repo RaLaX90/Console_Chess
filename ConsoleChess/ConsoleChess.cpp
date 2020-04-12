@@ -1,7 +1,6 @@
 ﻿#include <iostream>
 #include <vector>
 #include <sstream>
-//#include <iomanip>
 //#include "figure.h"
 
 using namespace std;
@@ -114,7 +113,7 @@ void showBoard(vector<vector<figures>> &chessBoard) {
 }
 
 void showInfo() {
-	cout << endl << "All application commands are shown below:\nstart - to start the game. Without this, you cannot do anything.\ninfo - show command\nrestart - start the game from the beginning. The previous game will be lost!\nboard - show the situation on the game board\nsave - the game will be saved and you can continue to play at any other time.\nload - continue the saved game.\nmove d2 d3 - move the figure. The second value indicates the number of sectors vertically and diagonally where the figure is to be moved, the third value indicates the number of sectors vertically and diagonally where the figure is to be moved.\n\nPlease note: YOU ARE NOT ABLE TO MOVE YOUR OWN FIGURES, AND ALSO MAKE THE WAYS WHICH ARE NOT PROVIDED BY THE TRADITIONAL GAME RULES.IF THE GAME IS NOT STARTED, ONLY DOWNLOAD AND START TEAMS WILL WORK." << endl << endl;
+	cout << endl << "All application commands are shown below:\nstart - to start the game. Without this, you cannot do anything.\ninfo - show command\nboard - show the situation on the game board\nmove d2 d3 - move the figure. The second value indicates the number of sectors vertically and diagonally where the figure is to be moved, the third value indicates the number of sectors vertically and diagonally where the figure is to be moved.\nclose - enter to complete the game\n\nPlease note: YOU ARE NOT ABLE TO MOVE YOUR OWN FIGURES, AND ALSO MAKE THE WAYS WHICH ARE NOT PROVIDED BY THE TRADITIONAL GAME RULES.IF THE GAME IS NOT STARTED, ONLY DOWNLOAD AND START TEAMS WILL WORK." << endl << endl;
 }
 
 bool isDataCorrect(string data) {
@@ -134,8 +133,6 @@ bool isDataCorrect(string data) {
 			}
 			else {
 				return true;
-				/*int8_t indexFirst = distance(begin(symbol), tempFirst);
-				cout << "First index  = " << indexFirst;*/
 			}
 		}
 
@@ -208,7 +205,6 @@ int main()
 	}
 
 
-
 	showBoard(chessBoard);
 	cout << "\nHello my friend. I want to play a game with you. You need to defeat another player who will play with you on the same device. You will play in turn. When you are ready, start." << endl;
 	showInfo();
@@ -225,26 +221,26 @@ int main()
 		cout <<	"Your command is: ";
 
 		cin >> moveData;
-		//cout << usersData;
 
-		if (moveData == "start" && start == false) {
-			start = true;
-			cout << "\n\nWin or lose - the choice is yours. The game started. Good luck." << endl << endl;
+		for (char &item : moveData) {
+			item = tolower(item);
 		}
-		else if (moveData == "restart" && start == true) {
 
+		if (moveData == "start") {
+			if (start == false) {
+				start = true;
+				cout << "\n\nWin or lose - the choice is yours. The game started. Good luck." << endl << endl;
+			}
+			else {
+				cout << "Game is not started. Use command \"start\"." << endl;
+			}
+			
 		}
 		else if (moveData == "info") {
 			showInfo();
 		}
 		else if (moveData == "board") {
 			showBoard(chessBoard);
-		}
-		else if (moveData == "save" && start == true) {
-
-		}
-		else if (moveData == "load") {
-
 		}
 		else if (moveData == "move") {
 
@@ -275,13 +271,19 @@ int main()
 
 					}
 					else {
-						cout << "Unknown command." << endl;
+						cout << "Unknown command or invalid data, where to need move." << endl;
 					}
+				}
+				else {
+					cout << "Unknown command or invalid data, where from need move." << endl;
 				}
 			}
 			else {
 				cout << "Game is not start. Use command \"start\"" << endl;
 			}
+		}
+		else if (moveData == "close") {
+			break;
 		}
 		else {
 			cout << "Unknown command." << endl;
