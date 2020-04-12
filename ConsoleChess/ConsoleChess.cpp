@@ -8,6 +8,14 @@ using namespace std;
 
 vector<char> symbol = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
 
+bool start = false;
+bool finish = true;
+
+bool turnWhite = true;
+
+string moveData;
+string tempMoveData;
+
 enum class figures {
 	WHITE_PAWN = 1,
 	BLACK_PAWN,
@@ -72,9 +80,9 @@ string whatIsIcons(figures &item) {
 
 void showBoard(vector<vector<figures>> &chessBoard) {
 
-	cout << "\t\t   White" << endl;
+	cout << endl << "\t\t   White" << endl;
 	
-	for (int8_t i = 0; i < 10; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		if (i == 0 || i == 9) {
 			for (int8_t j = 0; j < 10; ++j) {
 				if (j == 0 || j == 9) {
@@ -106,7 +114,7 @@ void showBoard(vector<vector<figures>> &chessBoard) {
 }
 
 void showInfo() {
-	cout << "\nAll application commands are shown below:\nstart - to start the game. Without this, you cannot do anything.\ninfo - show command\nrestart - start the game from the beginning. The previous game will be lost!\nsave - the game will be saved and you can continue to play at any other time.\nload - continue the saved game.\nmove d2 d3 - move the figure. The second value indicates the number of sectors vertically and diagonally where the figure is to be moved, the third value indicates the number of sectors vertically and diagonally where the figure is to be moved.\n\nPlease note: YOU ARE NOT ABLE TO MOVE YOUR OWN FIGURES, AND ALSO MAKE THE WAYS WHICH ARE NOT PROVIDED BY THE TRADITIONAL GAME RULES.IF THE GAME IS NOT STARTED, ONLY DOWNLOAD AND START TEAMS WILL WORK." << endl << endl;
+	cout << endl << "All application commands are shown below:\nstart - to start the game. Without this, you cannot do anything.\ninfo - show command\nrestart - start the game from the beginning. The previous game will be lost!\nboard - show the situation on the game board\nsave - the game will be saved and you can continue to play at any other time.\nload - continue the saved game.\nmove d2 d3 - move the figure. The second value indicates the number of sectors vertically and diagonally where the figure is to be moved, the third value indicates the number of sectors vertically and diagonally where the figure is to be moved.\n\nPlease note: YOU ARE NOT ABLE TO MOVE YOUR OWN FIGURES, AND ALSO MAKE THE WAYS WHICH ARE NOT PROVIDED BY THE TRADITIONAL GAME RULES.IF THE GAME IS NOT STARTED, ONLY DOWNLOAD AND START TEAMS WILL WORK." << endl << endl;
 }
 
 bool isDataCorrect(string data) {
@@ -119,7 +127,8 @@ bool isDataCorrect(string data) {
 			return false;
 		}
 		else {
-			if (data[1] < 1 || data[1] > 8) {
+			int8_t temp = atoi(string({ data[1] }).c_str());
+			if (temp < 1 || temp > 8) {
 				cout << "There is no such first horizontal coordinate" << endl;
 				return false;
 			}
@@ -132,7 +141,19 @@ bool isDataCorrect(string data) {
 
 	}
 	else {
-		cout << "First data is NOT OK" << endl;
+		cout << "Unknown command " << endl;
+		return false;
+	}
+
+}
+
+bool isDesiredColor(figures &figure) {
+
+	if ((turnWhite && ((int)figure % 2 == 1)) || (!turnWhite && ((int)figure % 2 == 0))) { //!
+		return true;
+	}
+	else {
+		cout << endl << "It's not your figure" << endl;
 		return false;
 	}
 
@@ -186,14 +207,7 @@ int main()
 
 	}
 
-	
-	bool start = false;
-	bool finish = true;
 
-	bool turnWhite = true;
-
-	string usersData;
-	string moveDataFirst;
 
 	showBoard(chessBoard);
 	cout << "\nHello my friend. I want to play a game with you. You need to defeat another player who will play with you on the same device. You will play in turn. When you are ready, start." << endl;
@@ -210,80 +224,59 @@ int main()
 
 		cout <<	"Your command is: ";
 
-		cin >> usersData;
+		cin >> moveData;
 		//cout << usersData;
 
-		if (usersData == "start" && start == false) {
+		if (moveData == "start" && start == false) {
 			start = true;
 			cout << "\n\nWin or lose - the choice is yours. The game started. Good luck." << endl << endl;
 		}
-		else if (usersData == "restart") {
+		else if (moveData == "restart" && start == true) {
 
 		}
-		else if (usersData == "info") {
+		else if (moveData == "info") {
 			showInfo();
 		}
-		else if (usersData == "save") {
+		else if (moveData == "board") {
+			showBoard(chessBoard);
+		}
+		else if (moveData == "save" && start == true) {
 
 		}
-		else if (usersData == "load") {
+		else if (moveData == "load") {
 
 		}
-		else if (usersData == "move") {
+		else if (moveData == "move") {
 
 			if (start == true) {
 
-				cin >> usersData;
+				cin >> moveData;
 
-				if (isalpha(tolower(usersData[0])) && isdigit(usersData[1])) {
-					cout << "First number is OK" << endl;
+				if (isDataCorrect(moveData)) {
 
-					auto tempFirst = find(begin(symbol), end(symbol), usersData[0]);
+					tempMoveData = moveData;
+					cin >> moveData;/////////////////////////////////////////////////////////////////
 
-					if (tempFirst == end(symbol)) {
-						cout << "There is no such first vertical coordinate" << endl;
+					if (isDataCorrect(moveData)) {
+
+						auto tempFirst = find(begin(symbol), end(symbol), tempMoveData[0]);
+						int8_t indexFirst = distance(begin(symbol), tempFirst);
+						int8_t tempFirstConversion = atoi(string({ tempMoveData[1] }).c_str());
+
+						auto tempSecond = find(begin(symbol), end(symbol), moveData[0]);
+						int8_t indexSecond = distance(begin(symbol), tempSecond);
+						int8_t tempSecondConversion = atoi(string({ moveData[1] }).c_str());
+
+						if (isDesiredColor(chessBoard[tempFirstConversion - 1][indexFirst])) {
+							chessBoard[tempSecondConversion - 1][indexSecond] = chessBoard[tempFirstConversion - 1][indexFirst];
+							chessBoard[tempFirstConversion - 1][indexFirst] = (figures)0;
+							showBoard(chessBoard);
+						}
+
 					}
 					else {
-
-						if (usersData[1] < 1 && usersData[1] > 8) {
-							cout << "There is no such first horizontal coordinate" << endl;
-						}
-						else {
-							int8_t indexFirst = distance(begin(symbol), tempFirst);
-							cout << "First index  = " << indexFirst;
-
-							moveDataFirst = usersData;
-							cin >> usersData;/////////////////////////////////////////////////////////////////
-
-							if (isalpha(tolower(usersData[0])) && isdigit(usersData[1])) {
-								cout << "Second number is OK" << endl;
-
-								auto tempSecond = find(begin(symbol), end(symbol), usersData[0]);
-								if (tempSecond == end(symbol)) {
-									cout << "There is no such second vertical coordinate" << endl;
-								}
-								else {
-
-									if (usersData[1] < 1 && usersData[1] > 8) {
-										cout << "There is no such first horizontal coordinate" << endl;
-									}
-									else {
-										int8_t indexSecond = distance(begin(symbol), tempSecond);
-										cout << "Second index  = " << indexSecond;
-									}
-									
-								}
-
-							}
-							else {
-								cout << "Unknown command." << endl;
-							}
-						}
-						
+						cout << "Unknown command." << endl;
 					}
-				}
-				else {
-					cout << "Unknown command." << endl;
 				}
 			}
 			else {
